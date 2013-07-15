@@ -1,4 +1,4 @@
-= Splicer =
+# Splicer #
 
 Splicer is an implementation of the JavaScript `Array` interface in terms of only the `splice` function.
 
@@ -6,6 +6,6 @@ Normally when composing an object that has Array-like properties and methods, on
 
 In more conventional OO languages, we might see something an AbstractBaseArray which defined a number of concrete methods but leaves a virtual `splice` free; so it is here.
 
-= Harmony =
+# Harmony #
 
 At present arguments munging is done in the classical style: with hope, Harmony will bring better optimizable argumentation conventions.
