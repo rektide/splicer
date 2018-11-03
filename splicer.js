@@ -1,3 +1,56 @@
+class Splicer{
+	splice(){
+		throw new Error("Not implememented: Splicer#splice") // this is for the user library to define
+	}
+	pop(){
+		const res= this.splice( this.length- 1,1)
+		if( res!== undefined){
+			return res[ 0]
+		}
+	}
+	push( ...args){
+		this.splice( this.length- 1, 0, ...args)
+		return this.length
+	}
+	reverse(){
+		let j= this.length
+		const res= new Array( j)
+		for( let i= 0; j>= 0; j--){
+			res[ j]= this[ i]
+			i++
+		}
+		return res
+	}
+	shift(){
+		var res= this.splice( 0, 1)
+		if( res!== undefined) {
+			return res[0]
+		}
+	}
+	Splicer.prototype.sort= function(){
+		var len= this.length,
+		  all= this.splice(0,len)
+		all.sort.apply(all,arguments)
+		__splice.call(all,0,0,0,0)
+		this.spliceN(all)
+		return this.asArray
+	}
+	Splicer.prototype.unshift= function(){
+		var args= __splice.call(arguments,0,0,0,0)
+		this.spliceN(args)
+		return this.length
+	}
+	
+var __VIEWS = ["concat","join","slice","toString","indexOf","lastIndexOf"]
+function __makeViewFunction(n){
+	return new Function("return Array.prototype."+n+".apply(this.asArray,arguments)")
+}
+for(var v in __VIEWS){
+	Splicer.prototype[v]= __makeViewFunction(__VIEWS[v])
+}
+
+}
+
 var __splice= Array.prototype.splice
 function __spliceN(arr,args){
 	return __splice.apply(arr,args)
@@ -16,7 +69,7 @@ function __hiddenAccessor(name){
 function Splicer(){
 	this.__initialize(__splice.call(arguments,0))
 	delete this.__initialize
-}
+}8
 
 // BASE IMPLEMENTATION - to change the behavior of Splicer, only these
 // three need attention
