@@ -2,6 +2,119 @@ class Splicer{
 	splice(){
 		throw new Error("Not implememented: Splicer#splice") // this is for the user library to define
 	}
+	get( index){
+		return this[ index]
+	}
+	set( index, value){
+		this.splice( index, 1, value)
+	}
+	delete( index){
+		this.splice( index, 1)
+	}
+
+	concat( ...append){
+		const copy= new Array( this.length+ append.length)
+		let i;
+		for( i= 0; i< this.length; ++i){
+			copy[ i]= this.get( i)
+		}
+		for( const j= 0; i< append.length; ++j){
+			copy[ i]= append[ j]
+		}
+		return copy
+	}
+	copyWithin( target, start= 0, end= this.length){
+		// polyfill taken from mdn thx apologies need to figure out proper credit. iou.
+		// Steps 1-2.
+		if (this == null) {
+			throw new TypeError('this is null or not defined')
+		}
+
+		let
+		  O = Object( this),
+		  // Steps 3-5.
+		  len= O.length >>> 0,
+		  // Steps 6-8.
+		  relativeTarget = target >> 0,
+		  to= relativeTarget< 0? Math.max( len+ relativeTarget, 0): Math.min( relativeTarget, len),
+		  // Steps 9-11.
+		  relativeStart= start >> 0,
+		  from= relativeStart< 0?  Math.max( len+ relativeStart, 0): Math.min( relativeStart, len),
+		  relativeEnd = end === undefined ? len : end >> 0,
+		  final = relativeEnd< 0? Math.max( len + relativeEnd, 0): Math.min(relativeEnd, len),
+		  count = Math.min(final - from, len - to),
+		  // Steps 16-17.
+		  direction = 1
+
+		if( from< to&& to< ( from + count)) {
+			direction= -1
+			from+= count- 1
+			to+= count- 1
+		}
+		// Step 18.
+		while( count > 0) {
+			if( from in O) {
+				this.set( to, this.get( from))
+			}else{
+				this.delete( to)
+			}
+			from+= direction
+			to+= direction
+			count--
+		}
+		// Step 19.
+		return O
+	}
+
+	*entries(){
+		for( let i= 0; i< this.length; ++i){
+			yield [ i, this.get( i)]
+		}
+	}
+	every( cb, thisArg){
+		for( let i= 0; i< this.length; ++i){
+			const val= thisArg!== undefined? cb.call( this.get( i), i, this): cb( this.get( i), i, this)
+			if( !val){
+				return false
+			}
+		}
+		return false
+	}
+	fill( value, start, end){
+		// Steps 1-2.
+		if (this == null) {
+		  throw new TypeError('this is null or not defined')
+		}
+		
+		let
+		  O = Object(this),
+		  // Steps 3-5.
+		  len= O.length >>> 0,
+		  // Steps 6-7.
+		  relativeStart= start >> 0,
+		  // Step 8.
+		  k= relativeStart< 0?  Math.max( len+ relativeStart, 0): Math.min( relativeStart, len),
+		  // Steps 9-10.
+		  relativeEnd= end=== undefined?  len: end >> 0,
+		  // Step 11.
+		  final= relativeEnd< 0?  Math.max( len+ relativeEnd, 0): Math.min(relativeEnd, len)
+		// Step 12.
+		while (k < final) {
+			this.set( k, value)
+			k++
+		}
+		// Step 13.
+		return O
+	}
+
+	join( seperator){
+	}
+	indexOf( searchElement, fromIndex){
+	}
+	lastIndexOf( searchElement, fromIndex){
+		
+	}
+
 	pop(){
 		const res= this.splice( this.length- 1,1)
 		if( res!== undefined){
@@ -27,19 +140,11 @@ class Splicer{
 			return res[0]
 		}
 	}
-	Splicer.prototype.sort= function(){
-		var len= this.length,
-		  all= this.splice(0,len)
-		all.sort.apply(all,arguments)
-		__splice.call(all,0,0,0,0)
-		this.spliceN(all)
-		return this.asArray
-	}
-	Splicer.prototype.unshift= function(){
-		var args= __splice.call(arguments,0,0,0,0)
-		this.spliceN(args)
+	unshift(...prepend){
+		this.splice( 0, 0, ...prepend)
 		return this.length
 	}
+}
 	
 var __VIEWS = ["concat","join","slice","toString","indexOf","lastIndexOf"]
 function __makeViewFunction(n){
